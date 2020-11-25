@@ -33,5 +33,5 @@ function plotThresh(figureNr, image, tresholds, t, imageName)
         end
     end
     
-    suptitle(header);
+    sgtitle(header);
 end

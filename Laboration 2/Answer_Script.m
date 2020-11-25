@@ -32,7 +32,7 @@ subplot(2, 2, 4)
 showgrey(dxtools + dytools)
 title("The two matrixes added together")
 
-suptitle("Results of using the Sobel Difference Operator")
+sgtitle("Results of using the Sobel Difference Operator")
 
 %% Question 2 - 3: Point-wise thresholding of gradient magnitudes
 
@@ -70,8 +70,8 @@ house = godthem256;
 tools = few256;
 
 % Scales and thresholds
-scale = [2, 4];
-treshold = [10, 10];
+scale = [5, 10];
+treshold = [250 , 1000];
 
 % Creating the figure
 figure(13)
@@ -82,51 +82,37 @@ curves = extractedge(house, scale(1), treshold(1), 'same');
 overlaycurves(house, curves);
 title("Scale = " + scale(1) + " Threshold = " + treshold(1))
 
+ 
 % Image: Tools
 subplot(1, 2, 2);
 curves = extractedge(tools, scale(2), treshold(2), 'same');
 overlaycurves(tools, curves);
 title("Scale = " + scale(2) + " Threshold = " + treshold(2))
 
-suptitle("Edges of House & Tools")
+sgtitle("Edges of House & Tools")
 
 
 %% Question 8 - 10: Hough transform
+% Code for question 10 can be found inside houghline function
 
 % Images
-triangle = triangle128;
 test = houghtest256;
 tools = few256;
 phone = phonecalc256;
 house = godthem256;
 
-% Testing
-figure(15)
+% ------  Those are the parameters below ------ %  
+% Houghedeline(img, scale, gradmagnthershold, ...
+% nrho, nthetha, nlines, verbose)
 
-% Image: Test
-subplot(1,2,1)
-showgrey(test)
+houghedgeline(test, 10, 10, 1000, 1000, 10, 1);
 
-% Image: Test
-subplot(1,2,2)
+figure()
+houghedgeline(tools, 5, 10, 1000, 60, 10, 0);
 
-houghedgeline(test, 2, 400, 400, 200, 10, 0);
-suptitle("First houghtest")
+figure()
+houghedgeline(house, 5, 20, 1000, 60, 9, 0);
+ 
+figure()
+houghedgeline(phone, 5, 10, 800, 60, 12, 0);
 
-% % Results
-% figure(16)
-% 
-% % Image: Tools
-% subplot(1,3,1)
-% plotHough(tools,2.5,80,1000,500,13, 0);
-% 
-% % Image: Phone
-% subplot(1,3,2)
-% % plotHough(phone,4,80,300,150,10, 0);
-% % 
-% % % Image: House
-% subplot(1,3,3)
-% plotHough(house,2,120,1000,500,15, 0);
-% 
-% suptitle("Hough Lines for Tools, Phone and House")
-%     

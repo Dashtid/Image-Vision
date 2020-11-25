@@ -1,70 +1,65 @@
-function [linepar, acc] = houghline(curves, magnitude, nrho, ntheta, threshold, nlines)
+function [linepar, acc] = houghline(curves, magnitude, ...
+nrho, ntheta, threshold, nlines, ~)
 
-  % Check edge one time, i.e. x and y are rounded 
-    accChecker = zeros(size(magnitude)); 
-
-    % Creating accumulator space
+    % Creating Accumulator
     acc = zeros(nrho, ntheta);
-
-    % Coordinate system setup
-    rhoBoundaries = sqrt(size(magnitude, 1)^2 + size(magnitude, 2)^2);
-    theta = linspace(-pi/2, pi/2, ntheta);
-    rho = linspace(-rhoBoundaries, rhoBoundaries, nrho);
-
-    % Loop over all the input curves (cf. pixelplotcurves)
-    insize = size(curves, 2);
-    trypointer = 1;
-
-    % Defining a monotonicaaly increasing accumulator increment function
-    f = monoFunction();
     
-    % Every point on every curve
-    while (trypointer <= insize) 
-        
-        polylength = curves(2, trypointer);
-        trypointer = trypointer + 1;
+    % Setting the coordinates
+    theta_v = linspace(-pi/2,pi/2,ntheta);
+    Dist = sqrt(size(magnitude,1)^2 + size(magnitude,2)^2);
+    rho_v = linspace(-Dist, Dist, nrho);
+    
+    size_input = size(curves, 2);
+    trypointer = 1;
+    
+    while (trypointer <= size_input)
+    polylength = curves(2, trypointer);
+    trypointer = trypointer + 1;
     
         for polyidx = 1:polylength
-            
-            x = curves(2, trypointer);
-            y = curves(1, trypointer);
-            M = magnitude(round(x),round(y));
-            
-            if (M >= threshold && accChecker(round(x),round(y)) == 0)
-                accChecker(round(x),round(y)) = 1;
-                % Loop through theta
-                for i = 1:insize(theta,2)
-                    
-                    % Rho of all theta 
-                    rho = x * cos(theta(i)) + y * sin(theta(i));
+        x = curves(2, trypointer);
+        y = curves(1, trypointer);
+        trypointer = trypointer + 1;
+        m = magnitude(round(x), round(y));
+        
+        if m < threshold
+            continue;
+        end
+        
+            % Thetha
+            for theta = 1:ntheta
                 
-                    % Indexing accumulator
-                    [~, j] = min(abs(rho - rho));
-
-                    % Update the accumulator                   
-                    acc(j, i) = acc(j, i) + f(abs(M)); 
-                end                  
+                % Rho
+                rho = x*cos(theta_v(theta))+...
+                    y*sin(theta_v(theta));
+            
+                % Index for rho
+                idx_rho = find(rho_v<rho,1,'last');
+                
+                % Q 10 - Voting
+                acc(idx_rho, theta) = acc(idx_rho, theta) + log(m);
+                %acc(idx_rho, theta) = acc(idx_rho, theta)+ 1;              
+                
             end
-            trypointer = trypointer + 1;
-        end       
+        end
     end
     
-    print('kuken')
-    
-    % Extract local maxima from the accumulator
-    [pos, value] = locmax8(acc); 
+    % Local maximum from acc
+    [pos, value] = locmax8(acc);
     [~, indexvector] = sort(value);
-    nmaxima = size(value, 1);
+    max = size(value, 1);
 
-    % Delimit the number of responses if necessary
-    linepar = zeros(2,nlines);
+    % Line according to acc
+    linepar = zeros(2, nlines);
+    
     for idx = 1:nlines
-         rhoidxacc = pos(indexvector(nmaxima - idx + 1), 1);
-         thetaidxacc = pos(indexvector(nmaxima - idx + 1), 2);
-         linepar(:,idx) = [rho(rhoidxacc);theta(thetaidxacc)]; 
+    rhoidxacc = pos(indexvector(max - idx + 1), 1);
+    thetaidxacc = pos(indexvector(max - idx + 1), 2);
+    linepar(:,idx) = [rho_v(rhoidxacc);theta_v(thetaidxacc)];
     end
-end
-
-function f = monoFunction()
-     f = @(n) log(n+1);
+    
+    %figure();
+    showgrey(acc);
+    title('Acumulator');   
+    
 end

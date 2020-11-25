@@ -1,3 +1,6 @@
+% Laboration 1: Filtering Operations
+% David Dashti
+
 %% Question 1-4: Properties of DFT. 
 
 %Creating a list with the points wanted

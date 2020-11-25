@@ -41,5 +41,5 @@ function plotFunction(figureNr, image, scale, type, imageTitle, plotTitle)
             
         end
     end
-    suptitle(plotTitle)
+    sgtitle(plotTitle)
 end
