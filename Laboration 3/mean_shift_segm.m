@@ -1,16 +1,9 @@
 function segm = mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations)
-%Given function, that performs mean shift segmentation.
 
 tic
 fprintf('Find colour channels with K-means...\n');
-
 K = 16;
-L=10;
-seed = 4321;
-UNTIL_CONV = false;
-threshold = 0.01;
-
-[segm, centers, counter] = kmeans_segm(I, K, L, seed, UNTIL_CONV, threshold);
+[ segm, centers ] = kmeans_segm(I, K, 10, 4321);
 toc
 
 centers(isnan(centers)) = 0.0;

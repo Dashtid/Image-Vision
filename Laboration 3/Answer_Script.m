@@ -4,7 +4,6 @@
 
 %% K-MEANS ALGORITHM
 
-
 % -------------------- Parameters -------------------- %
 K = 10;              % Number of clusters
 L = 20;              % Number of iterations
@@ -25,10 +24,9 @@ h = fspecial('gaussian', [d d], image_sigma);
 I_input = imfilter(I_resized, h);
 
 % Performing segementation
-[segm, centers, counter] = kmeans_segm(I_input, K, L, seed, thresh);
-
-I_segmented = mean_segments(I_temp, segm);
-I_resized = overlay_bounds(I_temp, segm);
+[Image_segmented, centers, counter] = kmeans_segm(I_input, K, L, seed, thresh);
+I_segmented = mean_segments(I_temp, Image_segmented);
+I_resized = overlay_bounds(I_temp, Image_segmented);
 
 % ------- Plotting ------- %
 figure
@@ -46,8 +44,8 @@ title('Segmentation overlayed on the original image')
 
 %% MEAN-SHIFT ALGORITHM
 
-close all
-clear
+% Cleaning up
+clear; close all
 
 % -------------------- Parameters -------------------- %
 spatial_bandwidth = 30.0;  % Spatial bandwidth
@@ -57,38 +55,35 @@ image_sigma = 1.0;         % Blurring factor
 scale_factor = 0.5;        % Factor for down-scale operation
 % ---------------------------------------------------- %
 
-img_name = 'orange';
-img_path = strcat(img_name,'.jpg');
-I = imread(img_path);
-I = imresize(I, scale_factor);
-Iback = I;
-d = 2*ceil(image_sigma*2) + 1;
+% Loading in the image and prepping it
+Im = imread('orange.jpg');
+I_resized = imresize(Im, scale_factor);
+I_temp = I_resized;
+
+% Performing filtering operations
+d = 2 * ceil(image_sigma * 2) + 1;
 h = fspecial('gaussian', [d d], image_sigma);
-I = imfilter(I, h);
+I_input = imfilter(I_resized, h);
 
-segm = mean_shift_segm(I, spatial_bandwidth, colour_bandwidth, num_iterations);
-Inew = mean_segments(Iback, segm);
-I = overlay_bounds(Iback, segm);
+% Performing segementation
+Image_segmented = mean_shift_segm(Im, spatial_bandwidth, colour_bandwidth, num_iterations);
+Im_segmented = mean_segments(I_temp, Image_segmented);
+Im = overlay_bounds(I_temp, Image_segmented);
 
-out_mean_1_path = 'lab3/result/meanshift1_';
-out_mean_1_path_img = strcat(out_mean_1_path,img_path);
+% ------- Plotting ------- %
+figure
+subplot(1,2,1); 
+imshow(Im_segmented); 
+title('The segmented image');
 
-out_mean_2_path = 'lab3/result/meanshift2_';
-out_mean_2_path_img = strcat(out_mean_2_path,img_path);
-
-imwrite(Inew, out_mean_1_path_img);
-imwrite(I,out_mean_2_path_img);
-
-subplot(1,2,1); imshow(Inew); 
-title(['\sigma^2_{s} = ', num2str(spatial_bandwidth), ', \sigma^2_{c} = ', num2str(colour_bandwidth)])
-
-subplot(1,2,2); imshow(I);
-title('Org. img, with overlay')
+subplot(1,2,2); 
+imshow(Im);
+title('Overlay')
 
 %% NORMALIZED CUT ALGORITHM
 
-close all
-clear
+% Cleaning up
+clear; close all
 
 % -------------------- Parameters -------------------- %
 colour_bandwidth = 15.0;   % color bandwidth
@@ -100,49 +95,57 @@ image_sigma = 2.0;         % Blurring factor
 scale_factor = 0.4;        % Factor for down-scale operation
 % ---------------------------------------------------- %
 
-I = imread('tiger3.jpg');
-I = imresize(I, scale_factor);
-Iback = I;
+Im = imread('tiger3.jpg');
+Im = imresize(Im, scale_factor);
+Iback = Im;
 d = 2*ceil(image_sigma*2) + 1;
 h = fspecial('gaussian', [d d], image_sigma);
-I = imfilter(I, h);
+Im = imfilter(Im, h);
 
-segm = norm_cuts_segm(I, colour_bandwidth, radius, ncuts_thresh, min_area, max_depth);
-Inew = mean_segments(Iback, segm);
-I = overlay_bounds(Iback, segm);
-imwrite(Inew,'lab3/result/normcuts1_3.png')
-imwrite(I,'lab3/result/normcuts2_3.png')
+Image_segmented = norm_cuts_segm(Im, colour_bandwidth, radius, ncuts_thresh, min_area, max_depth);
+Im_segmented = mean_segments(Iback, Image_segmented);
+Im_overlay = overlay_bounds(Iback, Image_segmented);
 
+% ------- Plotting ------- %
 figure
-subplot(1,2,1); imshow(Inew); title('Resulting segmentation');
-subplot(1,2,2); imshow(I); title('Overlay bounds using Normalized Cut');
+subplot(1,2,1);
+imshow(Im_segmented); 
+title('Resulting segmentation');
+subplot(1,2,2); 
+imshow(Im_overlay); 
+title('Overlay bounds using Normalized Cut');
 
 %% GRAPH CUT ALGORITHM
 
-close all
-clear
+% Cleaning up
+clear; close all
 
 % -------------------- Parameters -------------------- %
-% image region to train foreground with
-area = [ 80, 110, 570, 300 ];  %tiger1
-K = 20;                      % number of mixture components
-alpha = 15.0;                 % maximum edge cost
-sigma = 10.0;                % edge cost decay factor
+K = 20;                      % Number of gaussian components
+alpha = 15.0;                % Max edge cost
+sigma = 10.0;                % Edge cost decay
 scale_factor = 0.5;          % Factor for down-scale operation
 % ---------------------------------------------------- %
 
-I = imread('tiger1.jpg');
-I_resized = imresize(I, scale_factor);
-Iback = I_resized;
+% Loading in the image and prepping it
+Im = imread('tiger1.jpg');
+I_resized = imresize(Im, scale_factor);
+I_temp = I_resized;
 
-area_scaled = int16(area*scale_factor); 
-[segm, prior] = graphcut_segm(I_resized, area_scaled, K, alpha, sigma);
+foreground = [85, 115, 575, 305];  
+foreground_scaled = int16(foreground * scale_factor); 
+[Image_segmented, prior] = graphcut_segm(I_resized, foreground_scaled, K, alpha, sigma);
+Im_segmented = mean_segments(Iback, Image_segmented);
+Im_overlay = overlay_bounds(Iback, Image_segmented);
 
-Inew = mean_segments(Iback, segm);
-I = overlay_bounds(Iback, segm);
-imwrite(Inew,'lab3/result/gcut1.png')
-imwrite(I,'lab3/result/gcut2.png')
-imwrite(prior,'lab3/result/gcut3.png')
-subplot(2,2,1); imshow(Inew); title('Resulting segmentation');
-subplot(2,2,2); imshow(I); title('Overlay bounds using Graph Cut');
-subplot(2,2,3); imshow(prior); title('Prior foreground probabilities');
+% ------- Plotting ------- %
+figure
+subplot(2,2,1);
+imshow(Im_segmented); 
+title('Resulting segmentation');
+subplot(2,2,2);
+imshow(Im_overlay); 
+title('Overlay bounds using Graph Cut');
+subplot(2,2,3);
+imshow(prior); 
+title('Prior foreground probabilities');
