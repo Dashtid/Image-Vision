@@ -5,12 +5,12 @@
 %% K-MEANS ALGORITHM
 
 % -------------------- Parameters -------------------- %
-K = 10;              % Number of clusters
-L = 20;              % Number of iterations
+K = 8;              % Number of clusters
+L = 15;              % Number of iterations
 seed = 1337;         % Seed
-scale_factor = 0.5;  % Factor for down-scale operation
+scale_factor = 0.6;  % Factor for down-scale operation
 image_sigma = 1.0;   % Blurring factor
-thresh = 0.01;       % Threshold to stop segmentation
+thresh = 0.02;       % Threshold to stop segmentation
 % ---------------------------------------------------- %
 
 % Loading in the image and prepping it
@@ -48,11 +48,11 @@ title('Segmentation overlayed on the original image')
 clear; close all;
 
 % -------------------- Parameters -------------------- %
-spatial_bandwidth = 30.0;  % Spatial bandwidth
-colour_bandwidth = 5.0;    % Colour bandwidth
-num_iterations = 40;       % Number of iterations
+spatial_bandwidth = 25.0;  % Spatial bandwidth
+colour_bandwidth = 6.0;    % Colour bandwidth
+num_iterations = 45;       % Number of iterations
 image_sigma = 1.0;         % Blurring factor
-scale_factor = 0.5;        % Factor for down-scale operation
+scale_factor = 0.6;        % Factor for down-scale operation
 % ---------------------------------------------------- %
 
 % Loading in the image and prepping it
@@ -86,17 +86,17 @@ title('Overlay')
 clear; close all;
 
 % -------------------- Parameters -------------------- %
-colour_bandwidth = 15.0;   % color bandwidth
-radius = 10;               % maximum neighbourhood distance
-ncuts_thresh = 0.5;        % cutting threshold
-min_area = 10;             % minimum area of segment
-max_depth = 10;            % maximum splitting depth
-image_sigma = 2.0;         % Blurring factor
-scale_factor = 0.4;        % Factor for down-scale operation
+colour_bandwidth = 17.0;   % color bandwidth
+radius = 12;               % maximum neighbourhood distance
+ncuts_thresh = 0.4;        % cutting threshold
+min_area = 15;             % minimum area of segment
+max_depth = 15;            % maximum splitting depth
+image_sigma = 1.5;         % Blurring factor
+scale_factor = 0.6;        % Factor for down-scale operation
 % ---------------------------------------------------- %
 
 % Loading in the image and prepping it
-Im = imread('tiger3.jpg');
+Im = imread('tiger2.jpg');
 Im = imresize(Im, scale_factor);
 Iback = Im;
 
@@ -127,10 +127,10 @@ title('Overlay');
 clear; close all;
 
 % -------------------- Parameters -------------------- %
-K = 20;                      % Number of gaussian components
-alpha = 15.0;                % Max edge cost
-sigma = 10.0;                % Edge cost decay
-scale_factor = 0.5;          % Factor for down-scale operation
+K = 15;                      % Number of gaussian components
+alpha = 16.0;                % Max edge cost
+sigma = 8.0;                % Edge cost decay
+scale_factor = 0.6;          % Factor for down-scale operation
 % ---------------------------------------------------- %
 
 % Loading in the image and prepping it
