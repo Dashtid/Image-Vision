@@ -29,10 +29,10 @@ g1 = zeros(num_rows * num_cols, K);
 for i = 1 : L
     % Computing prob. using mask 
     for k = 1 : K
-        k_mean = centers(k, :);
-        k_cov = covariance{k};
-        difference = bsxfun(@minus, Im_w_ones, k_mean);
-        zero_vec(:, k) = 1 / sqrt(det(k_cov) * (2 * pi) ^ 3) * exp(-0.5 * sum((difference * inv(k_cov) .* difference), 2));
+        mean_k = centers(k, :);
+        cov_k = covariance{k};
+        difference = bsxfun(@minus, Im_w_ones, mean_k);
+        zero_vec(:, k) = 1 / sqrt(det(cov_k) * (2 * pi) ^ 3) * exp(-0.5 * sum((difference * inv(cov_k) .* difference), 2));
     end
     
     p = bsxfun(@times, zero_vec, temp_vec);
@@ -49,15 +49,15 @@ for i = 1 : L
     end
 end
 
-% Probabilities for all pixels in Im
+% Compute probabilities p(c_i) in Eq.(3) for all pixels I
 for k = 1 : K
-    k_mean = centers(k, :);
-    k_cov = covariance{k};
-    difference = bsxfun(@minus, Im_double, k_mean);
-    g1(:, k) = 1 / sqrt(det(k_cov) * (2 * pi)^3) * exp(-1/2 * sum((difference * inv(k_cov) .* difference), 2));
+    mean_k = centers(k, :);
+    cov_k = covariance{k};
+    difference = bsxfun(@minus, Im_double, mean_k);
+    g1(:, k) = 1 / sqrt(det(cov_k) * (2 * pi)^3) * exp(-1/2 * sum((difference * inv(cov_k) .* difference), 2));
 end
 
-prob_prior = sum(bsxfun(@times, g1, temp_vec), 2);
-probability = reshape(prob_prior, num_rows, num_cols, 1);
+prob_pre = sum(bsxfun(@times, g1, temp_vec), 2);
+probability = reshape(prob_pre, num_rows, num_cols, 1);
 
 end

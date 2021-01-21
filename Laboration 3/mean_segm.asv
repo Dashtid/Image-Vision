@@ -1,0 +1,18 @@
+function Im_updated = mean_segm(Im, segmentation)
+
+N = max(max(segmentation));
+[h, w, c] = size(Im);
+Ic = single(reshape(Im, [h * w, c]));
+sc = reshape(segmentation, [h * w, 1]);
+cols = zeros(N, c);
+nums = zeros(N, 1);
+
+for i = 1 : h * w
+    s = sc(i);
+    cols(s, :) = cols(s, :) + Ic(i, :);
+    nums(s) = nums(s) + 1;
+end
+
+
+cols = bsxfun(@rdivide, cols, nums);
+Im_updated = uint8(reshape(cols(sc,:), [h,w,c]));
