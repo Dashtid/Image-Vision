@@ -1,19 +1,16 @@
-% Answer_Script.m
-% Laboration 1: Filtering Operations
-% David Dashti
+% Filtering Operations in the Frequency Domain
 
-%% Question 1-4: Properties of DFT
+%% Properties of DFT
+% Visualize the effect of different frequency components using fftwave
 
-% List of points to analyze
-points = [9,5; 5,9; 17,9; 17,121; 5,1; 125,1];
+points = [9,5; 5,9; 17,9; 17,121; 5,1; 125,1]; % (u,v) frequency points
 
-% Generate figures for each point
 for i = 1:size(points, 1)
     figure(i)
     fftwave(points(i, 1), points(i, 2));
 end
-
-%% Question 5-6: Centering Operation in DFT
+%% Centering Operation in DFT
+% Explore the effect of frequencies near the image size
 
 figure(8);
 fftwave(1, 65);
@@ -24,18 +21,16 @@ fftwave(65, 127);
 suptitle("What happens when u is just above sz and v is almost sz");
 
 %% Question 7-9: Linearity
+% Demonstrate linearity of the Fourier transform
 
-% Create matrices
-F = [zeros(56, 128); ones(16, 128); zeros(56, 128)];
-G = F';
-H = F + 2 * G;
+F = [zeros(56, 128); ones(16, 128); zeros(56, 128)]; % Horizontal bar
+G = F';                                              % Vertical bar
+H = F + 2 * G;                                       % Linear combination
 
-% Compute Fourier transforms
 Fhat = fft2(F);
 Ghat = fft2(G);
 Hhat = fft2(H);
 
-% Plot matrices and their transforms
 figure(11)
 subplot(3, 3, 1); showgrey(F); title('F');
 subplot(3, 3, 2); showgrey(G); title('G');
@@ -46,7 +41,8 @@ subplot(3, 3, 6); showgrey(log(1 + abs(Hhat))); title('Log of Hhat');
 subplot(3, 3, 7); showgrey(log(1 + abs(fftshift(Hhat)))); title('Log centered Hhat');
 subplot(3, 3, 8); showgrey(F .* G); title('F .* G');
 
-%% Question 10: Multiplication and Convolution
+%% Multiplication and Convolution
+% Show the relationship between multiplication and convolution in the frequency domain
 
 figure(12)
 subplot(2, 2, 1); showgrey(F.*G); title('F.*G');
@@ -57,15 +53,16 @@ subplot(2, 2, 4); showfs(fftshift((1/(128*128))*conv2(fftshift(Fhat), fftshift(G
 title('Convolution of Fhat, Ghat');
 
 %% Question 11-12: Rotation and Fourier
+% Investigate how rotation in the spatial domain affects the frequency domain
 
 F = [zeros(60, 128); ones(8, 128); zeros(60, 128)] .* ...
-    [zeros(128, 48) ones(128, 32) zeros(128, 48)];
+    [zeros(128, 48) ones(128, 32) zeros(128, 48)]; % Rectangle
 
 figure(13)
 subplot(2, 3, 1); showgrey(F); title('F');
 subplot(2, 3, 2); showfs(fft2(F)); title('Fourier of F');
 
-alpha = 30;
+alpha = 30; % Rotation angle
 G = rot(F, alpha);
 subplot(2, 3, 3); showgrey(G); title('Rotation of 30 degrees');
 
@@ -75,13 +72,14 @@ subplot(2, 3, 4); showfs(Ghat); title('Fourier of rotated matrix');
 Hhat = rot(fftshift(Ghat), -alpha);
 subplot(2, 3, 5); showgrey(log(1 + abs(Hhat))); title('Logarithmic of Fourier rotated back');
 
-%% Question 13: Magnitude and Phase Manipulation
+%% Magnitude and Phase Manipulation
+% Explore the effect of changing magnitude and phase in the frequency domain
 
 img{1} = phonecalc128;
 img{2} = few128;
 img{3} = nallo128;
 names_of_images = ["phonecalc128", "few128", "nallo128"];
-a = 1e-10;
+a = 1e-10; % Small value for magnitude manipulation
 
 figure(14);
 for i = 1:3  
@@ -90,7 +88,8 @@ for i = 1:3
     subplot(3, 3, 6 + i); showgrey(randphaseimage(img{i})); title("Randomizing phase");
 end
 
-%% Question 14-15: Gaussian Filtering using FFT
+%% Gaussian Filtering using FFT
+% Visualize Gaussian filters in the frequency domain for different variances
 
 variance_values = [0.1, 0.3, 1.0, 10.0, 100.0];
 
@@ -102,7 +101,8 @@ for idx = 1:length(variance_values)
     suptitle(['Variance of: ', num2str(variance_values(idx))]);
 end
 
-%% Question 16: Gaussian Filtering of Images
+%% Gaussian Filtering of Images
+% Apply Gaussian filtering to images with different variances
 
 new_variance_values = [1.0, 4.0, 16.0, 64.0, 256.0];
 l = length(new_variance_values);
@@ -123,7 +123,8 @@ for i = 1:l
 end
 suptitle("few128 convolved with gauss, different variances");
 
-%% Question 17-18: Smoothing
+%% Smoothing
+% Compare different smoothing techniques on noisy images
 
 office = office256;
 add = gaussnoise(office, 16);  
@@ -187,7 +188,8 @@ for i = 1:3
 end
 suptitle("Sap with ideal low-pass filter, different cut-off freq");
 
-%% Question 19-20: Smoothing and Subsampling
+%% Smoothing and Subsampling
+% Show the effect of smoothing before subsampling
 
 img = phonecalc256;
 smooth_gauss = img;
@@ -210,6 +212,7 @@ for i = 1:5
     subplot(3, 5, i + 10); showgrey(smooth_ideal_lp); title(['Subsample w. ideal lp, i = ', num2str(i)]);
 end
 
+% --- Helper Function: Gaussian Filtering in Frequency Domain --- %
 function Gauss = gaussfft(pic, t)
 %GAUSSFFT Applies a Gaussian filter in the frequency domain.
 %   Gauss = gaussfft(pic, t) convolves the image 'pic' with a Gaussian
@@ -217,11 +220,11 @@ function Gauss = gaussfft(pic, t)
 
     [row, col] = size(pic);
 
-    % Create axis values
+    % Create axis values centered at zero
     x = -(row/2):(row/2)-1;
     y = -(col/2):(col/2)-1;
 
-    % Create meshgrid
+    % Create meshgrid for Gaussian
     [X, Y] = meshgrid(x, y);
 
     % Create Gaussian filter
@@ -231,6 +234,6 @@ function Gauss = gaussfft(pic, t)
     Pic_hat = fft2(pic);
     Ghat = fft2(fftshift(G));
 
-    % Multiply and inverse FFT
+    % Multiply in frequency domain and inverse FFT to get filtered image
     Gauss = ifft2(Pic_hat .* Ghat);
 end
