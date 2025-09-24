@@ -8,3 +8,8 @@
 target/
 bin/
 resources/
+
+settings.local.json
+
+# Claude Code configuration
+.claude/
